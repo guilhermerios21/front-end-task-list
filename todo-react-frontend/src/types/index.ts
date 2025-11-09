@@ -8,7 +8,8 @@ export interface User {
 }
 
 export interface Task {
-  _id: string;
+  _id?: string;  // MongoDB
+  id?: string;   // PostgreSQL
   title: string;
   description?: string;
   status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
@@ -16,8 +17,11 @@ export interface Task {
   dueDate?: string; // ISO string
   tags?: string[];
   userId?: string;
+  user_id?: string; // PostgreSQL pode usar snake_case
   createdAt?: string;
   updatedAt?: string;
+  created_at?: string; // PostgreSQL pode usar snake_case
+  updated_at?: string; // PostgreSQL pode usar snake_case
 }
 
 export interface AuthResponse {

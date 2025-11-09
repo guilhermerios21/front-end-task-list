@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Task, TaskUpdateData } from '../../types';
+import { getId } from '../../utils/database';
 import './TaskItem.css';
 
 interface TaskItemProps {
@@ -13,9 +14,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onUpdate, onDelete 
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description || '');
+  const taskId = getId(task);
 
   const handleToggle = () => {
-    onToggle(task._id, task.status);
+    onToggle(taskId, task.status);
   };
 
   const handleSaveEdit = () => {
@@ -23,7 +25,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onUpdate, onDelete 
       return;
     }
 
-    onUpdate(task._id, {
+    onUpdate(taskId, {
       title: editTitle.trim(),
       description: editDescription.trim() || undefined,
       status: task.status,
@@ -38,7 +40,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onUpdate, onDelete 
   };
 
   const handleDelete = () => {
-    onDelete(task._id);
+    onDelete(taskId);
   };
 
   if (isEditing) {

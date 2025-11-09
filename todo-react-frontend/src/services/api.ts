@@ -10,6 +10,30 @@ import type {
   ApiError,
 } from '../types';
 
+// ==================== HELPERS ====================
+
+// Normaliza IDs entre MongoDB (_id) e PostgreSQL (id)
+const normalizeTask = (task: any): Task => {
+  return {
+    ...task,
+    _id: task._id || task.id, // Prioriza _id (MongoDB), fallback para id (PostgreSQL)
+    id: task.id || task._id,  // Garante que ambos existam
+    userId: task.userId || task.user_id, // Normaliza user_id para userId
+    createdAt: task.createdAt || task.created_at, // Normaliza created_at para createdAt
+    updatedAt: task.updatedAt || task.updated_at, // Normaliza updated_at para updatedAt
+  };
+};
+
+const normalizeUser = (user: any): any => {
+  return {
+    ...user,
+    _id: user._id || user.id,
+    id: user.id || user._id,
+    createdAt: user.createdAt || user.created_at,
+    updatedAt: user.updatedAt || user.updated_at,
+  };
+};
+
 // Helper para obter headers com autenticação
 const getHeaders = (token?: string): HeadersInit => {
   const headers: HeadersInit = {
@@ -58,8 +82,11 @@ export const registerUser = async (userData: RegisterData): Promise<{ message?: 
     headers: getHeaders(),
     body: JSON.stringify(userData),
   });
-  // Backend retorna 201 com { message, user }, sem token.
-  return handleResponse(response);
+  const data = await handleResponse<{ message?: string; user?: any; token?: string }>(response);
+  if (data.user) {
+    data.user = normalizeUser(data.user);
+  }
+  return data;
 };
 
 export const loginUser = async (credentials: LoginData): Promise<AuthResponse> => {
@@ -68,7 +95,11 @@ export const loginUser = async (credentials: LoginData): Promise<AuthResponse> =
     headers: getHeaders(),
     body: JSON.stringify(credentials),
   });
-  return handleResponse<AuthResponse>(response);
+  const data = await handleResponse<AuthResponse>(response);
+  if (data.user) {
+    data.user = normalizeUser(data.user);
+  }
+  return data;
 };
 
 export const checkProtected = async (token: string): Promise<{ message: string; user: any }> => {
@@ -76,7 +107,11 @@ export const checkProtected = async (token: string): Promise<{ message: string; 
     method: 'GET',
     headers: getHeaders(token),
   });
-  return handleResponse(response);
+  const data = await handleResponse<{ message: string; user: any }>(response);
+  if (data.user) {
+    data.user = normalizeUser(data.user);
+  }
+  return data;
 };
 
 // ==================== TASKS ====================
@@ -87,7 +122,7 @@ export const fetchTasks = async (token: string): Promise<Task[]> => {
     headers: getHeaders(token),
   });
   const data = await handleResponse<{ message?: string; count?: number; tasks: Task[] }>(response);
-  return data.tasks;
+  return data.tasks.map(normalizeTask);
 };
 
 export const fetchTaskById = async (taskId: string, token: string): Promise<Task> => {
@@ -96,7 +131,7 @@ export const fetchTaskById = async (taskId: string, token: string): Promise<Task
     headers: getHeaders(token),
   });
   const data = await handleResponse<{ message?: string; task: Task }>(response);
-  return data.task;
+  return normalizeTask(data.task);
 };
 
 export const createTask = async (taskData: TaskCreateData, token: string): Promise<Task> => {
@@ -105,7 +140,8 @@ export const createTask = async (taskData: TaskCreateData, token: string): Promi
     headers: getHeaders(token),
     body: JSON.stringify(taskData),
   });
-  return handleResponse<Task>(response);
+  const task = await handleResponse<Task>(response);
+  return normalizeTask(task);
 };
 
 export const updateTask = async (
@@ -118,7 +154,8 @@ export const updateTask = async (
     headers: getHeaders(token),
     body: JSON.stringify(taskData),
   });
-  return handleResponse<Task>(response);
+  const task = await handleResponse<Task>(response);
+  return normalizeTask(task);
 };
 
 export const patchTask = async (
@@ -131,7 +168,8 @@ export const patchTask = async (
     headers: getHeaders(token),
     body: JSON.stringify(taskData),
   });
-  return handleResponse<Task>(response);
+  const task = await handleResponse<Task>(response);
+  return normalizeTask(task);
 };
 
 export const deleteTask = async (taskId: string, token: string): Promise<void> => {
@@ -158,7 +196,8 @@ export const fetchUsers = async (token: string): Promise<any[]> => {
     method: 'GET',
     headers: getHeaders(token),
   });
-  return handleResponse(response);
+  const users = await handleResponse<any[]>(response);
+  return users.map(normalizeUser);
 };
 
 export const fetchUserById = async (userId: string, token: string): Promise<any> => {
@@ -166,7 +205,8 @@ export const fetchUserById = async (userId: string, token: string): Promise<any>
     method: 'GET',
     headers: getHeaders(token),
   });
-  return handleResponse(response);
+  const user = await handleResponse<any>(response);
+  return normalizeUser(user);
 };
 
 export const updateUser = async (userId: string, userData: any, token: string): Promise<any> => {
@@ -175,7 +215,8 @@ export const updateUser = async (userId: string, userData: any, token: string): 
     headers: getHeaders(token),
     body: JSON.stringify(userData),
   });
-  return handleResponse(response);
+  const user = await handleResponse<any>(response);
+  return normalizeUser(user);
 };
 
 export const deleteUser = async (userId: string, token: string): Promise<void> => {

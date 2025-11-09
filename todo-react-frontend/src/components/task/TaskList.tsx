@@ -1,6 +1,7 @@
 import React from 'react';
 import TaskItem from './TaskItem';
 import type { Task, TaskUpdateData } from '../../types';
+import { getId } from '../../utils/database';
 import './TaskList.css';
 
 interface TaskListProps {
@@ -24,7 +25,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onUpdate, onDelete
           <div className="tasks-grid">
             {pendingTasks.map(task => (
               <TaskItem
-                key={task._id}
+                key={getId(task)}
                 task={task}
                 onToggle={onToggle}
                 onUpdate={onUpdate}
@@ -43,7 +44,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onUpdate, onDelete
           <div className="tasks-grid">
             {completedTasks.map(task => (
               <TaskItem
-                key={task._id}
+                key={getId(task)}
                 task={task}
                 onToggle={onToggle}
                 onUpdate={onUpdate}

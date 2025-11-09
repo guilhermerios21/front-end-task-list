@@ -10,6 +10,7 @@ import {
 } from '../services/api';
 import TaskList from '../components/task/TaskList';
 import type { Task, TaskCreateData, TaskUpdateData } from '../types';
+import { getId } from '../utils/database';
 import './Tasks.css';
 
 const Tasks: React.FC = () => {
@@ -94,7 +95,7 @@ const Tasks: React.FC = () => {
 
     try {
       const updatedTask = await updateTask(taskId, taskData, token);
-      setTasks(tasks.map(task => task._id === taskId ? updatedTask : task));
+      setTasks(tasks.map(task => getId(task) === taskId ? updatedTask : task));
       toast.success('Tarefa atualizada!');
     } catch (error: any) {
       console.error('Erro ao atualizar tarefa:', error);
@@ -116,7 +117,7 @@ const Tasks: React.FC = () => {
 
     try {
       const updatedTask = await patchTask(taskId, { status: newStatus }, token);
-      setTasks(tasks.map(task => task._id === taskId ? updatedTask : task));
+      setTasks(tasks.map(task => getId(task) === taskId ? updatedTask : task));
       toast.success(newStatus === 'completed' ? 'Tarefa concluída!' : 'Tarefa reaberta!');
     } catch (error: any) {
       console.error('Erro ao atualizar status:', error);
@@ -140,7 +141,7 @@ const Tasks: React.FC = () => {
 
     try {
       await deleteTask(taskId, token);
-      setTasks(tasks.filter(task => task._id !== taskId));
+      setTasks(tasks.filter(task => getId(task) !== taskId));
       toast.success('Tarefa deletada!');
     } catch (error: any) {
       console.error('Erro ao deletar tarefa:', error);
