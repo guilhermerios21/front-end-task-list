@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/api';
-import { setToken } from '../../utils/storage';
 
 const RegisterForm: React.FC = () => {
-    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -14,9 +14,8 @@ const RegisterForm: React.FC = () => {
         setError('');
 
         try {
-            const response = await registerUser({ username, password });
-            setToken(response.token);
-            navigate('/tasks');
+            await registerUser({ name, email, password });
+            navigate('/login');
         } catch (err) {
             setError('Erro ao cadastrar. Tente novamente.');
         }
@@ -27,12 +26,22 @@ const RegisterForm: React.FC = () => {
             <h2>Cadastro</h2>
             {error && <p className="error">{error}</p>}
             <div>
-                <label htmlFor="username">Usuário:</label>
+                <label htmlFor="name">Nome:</label>
                 <input
                     type="text"
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                />
+            </div>
+            <div>
+                <label htmlFor="email">Email:</label>
+                <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                 />
             </div>

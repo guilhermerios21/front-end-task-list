@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (decoded) {
           const userFromToken: User = {
             _id: decoded.userId || decoded.sub || decoded.id,
-            username: decoded.username || 'Usuário',
+            name: decoded.name || decoded.username || 'Usuário',
             email: decoded.email || '',
           };
           setUserState(userFromToken);
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (decoded) {
       const userFromToken: User = {
         _id: decoded.userId || decoded.sub || decoded.id,
-        username: decoded.username || 'Usuário',
+        name: decoded.name || decoded.username || 'Usuário',
         email: decoded.email || '',
       };
       setUserState(userFromToken);

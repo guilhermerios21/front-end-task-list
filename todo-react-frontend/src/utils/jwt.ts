@@ -7,7 +7,7 @@ interface JWTPayload {
   userId?: string;
   id?: string;
   email?: string;
-  username?: string;
+  name?: string;
   [key: string]: any;
 }
 

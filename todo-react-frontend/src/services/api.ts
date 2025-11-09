@@ -52,13 +52,14 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 
 // ==================== AUTH ====================
 
-export const registerUser = async (userData: RegisterData): Promise<AuthResponse> => {
+export const registerUser = async (userData: RegisterData): Promise<{ message?: string; user?: any; token?: string }> => {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(userData),
   });
-  return handleResponse<AuthResponse>(response);
+  // Backend retorna 201 com { message, user }, sem token.
+  return handleResponse(response);
 };
 
 export const loginUser = async (credentials: LoginData): Promise<AuthResponse> => {

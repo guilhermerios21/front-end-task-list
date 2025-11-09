@@ -23,7 +23,7 @@ const Header: React.FC = () => {
           {isAuthenticated ? (
             <>
               <span className="header-user">
-                Olá, {user?.username || 'Usuário'}
+                Olá, {user?.name || 'Usuário'}
               </span>
               <Link to="/tasks" className="header-link">
                 Minhas Tarefas

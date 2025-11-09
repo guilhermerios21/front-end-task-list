@@ -1,7 +1,7 @@
 export interface User {
   _id?: string;
   id?: string;
-  username: string;
+  name: string;
   email: string;
   createdAt?: string;
   updatedAt?: string;
@@ -12,6 +12,10 @@ export interface Task {
   title: string;
   description?: string;
   completed: boolean;
+  status?: string; // e.g., "pending" | "in_progress" | "completed"
+  priority?: string; // e.g., "low" | "normal" | "urgent"
+  dueDate?: string; // ISO string
+  tags?: string[];
   userId?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -23,7 +27,7 @@ export interface AuthResponse {
 }
 
 export interface RegisterData {
-  username: string;
+  name: string;
   email: string;
   password: string;
 }

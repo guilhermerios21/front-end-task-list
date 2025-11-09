@@ -8,14 +8,14 @@ import './Auth.css';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<RegisterData>({
-    username: '',
+    name: '',
     email: '',
     password: '',
   });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -33,7 +33,7 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.username || !formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password) {
       toast.error('Preencha todos os campos!');
       return;
     }
@@ -52,18 +52,12 @@ const Register: React.FC = () => {
 
     try {
       const response = await registerUser(formData);
-      toast.success('Cadastro realizado com sucesso!');
-      
-      // Se o register retornar token, faz login automaticamente
-      if (response.token) {
-        login(response.token);
-        navigate('/tasks');
-      } else {
-        // Senão, redireciona para login
-        navigate('/login');
-      }
+      // Backend retorna { message, user } e status 201
+      toast.success(response.message || 'Usuário criado com sucesso!');
+      navigate('/login');
     } catch (error: any) {
       console.error('Erro no registro:', error);
+      // erro 422: { message: "Email já cadastrado" }
       toast.error(error.message || 'Erro ao cadastrar. Tente novamente.');
     } finally {
       setIsLoading(false);
@@ -78,12 +72,12 @@ const Register: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="username">Nome de usuário</label>
+            <label htmlFor="name">Nome</label>
             <input
               type="text"
-              id="username"
-              name="username"
-              value={formData.username}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               placeholder="Seu nome"
               required
