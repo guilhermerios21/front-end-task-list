@@ -1,0 +1,15 @@
+{
+  "buildCommand": "cd todo-react-frontend && npm install && npm run build",
+  "outputDirectory": "todo-react-frontend/dist",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://backend-express.conference-ticket-guilhermerios.tech/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
