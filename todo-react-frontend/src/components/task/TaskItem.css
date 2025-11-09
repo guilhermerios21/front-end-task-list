@@ -1,0 +1,166 @@
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.task-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.task-item.completed {
+  opacity: 0.7;
+  border-left-color: #95a5a6;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: #95a5a6;
+}
+
+.task-item.editing {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  flex: 1;
+}
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.task-text {
+  flex: 1;
+}
+
+.task-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  color: #2c3e50;
+  word-break: break-word;
+}
+
+.task-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  word-break: break-word;
+}
+
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-edit,
+.btn-delete {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: transform 0.2s;
+  opacity: 0.7;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.task-edit-input,
+.task-edit-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+
+.task-edit-input:focus,
+.task-edit-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.task-edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.task-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-save {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #229954;
+}
+
+.btn-cancel {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #7f8c8d;
+}
+
+@media (max-width: 768px) {
+  .task-item {
+    padding: 0.75rem;
+  }
+
+  .task-content {
+    gap: 0.75rem;
+  }
+
+  .task-title {
+    font-size: 0.9rem;
+  }
+
+  .task-description {
+    font-size: 0.8rem;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    font-size: 1rem;
+  }
+}
