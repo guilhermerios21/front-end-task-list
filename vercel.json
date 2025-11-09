@@ -4,6 +4,14 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/api-mongo/(.*)",
+      "destination": "https://backend-express.conference-ticket-guilhermerios.tech/api/$1"
+    },
+    {
+      "source": "/api-pg/(.*)",
+      "destination": "https://SEU-BACKEND-POSTGRES.vercel.app/api/$1"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "https://backend-express.conference-ticket-guilhermerios.tech/api/$1"
     },
