@@ -11,9 +11,8 @@ export interface Task {
   _id: string;
   title: string;
   description?: string;
-  completed: boolean;
-  status?: string; // e.g., "pending" | "in_progress" | "completed"
-  priority?: string; // e.g., "low" | "normal" | "urgent"
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
   dueDate?: string; // ISO string
   tags?: string[];
   userId?: string;
@@ -40,19 +39,29 @@ export interface LoginData {
 export interface TaskCreateData {
   title: string;
   description?: string;
-  completed?: boolean;
+  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+  dueDate?: string;
+  tags?: string[];
 }
 
 export interface TaskUpdateData {
   title?: string;
   description?: string;
-  completed?: boolean;
+  status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  priority?: 'low' | 'normal' | 'high' | 'urgent';
+  dueDate?: string;
+  tags?: string[];
 }
 
 export interface TaskStats {
   total: number;
-  completed: number;
-  pending: number;
+  byStatus: {
+    pending: number;
+    inProgress: number;
+    completed: number;
+    cancelled: number;
+  };
 }
 
 export interface ApiError {

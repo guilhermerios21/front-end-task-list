@@ -5,14 +5,14 @@ import './TaskList.css';
 
 interface TaskListProps {
   tasks: Task[];
-  onToggle: (taskId: string, completed: boolean) => Promise<void>;
+  onToggle: (taskId: string, currentStatus: string) => Promise<void>;
   onUpdate: (taskId: string, taskData: TaskUpdateData) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
 }
 
 const TaskList: React.FC<TaskListProps> = ({ tasks, onToggle, onUpdate, onDelete }) => {
-  const completedTasks = tasks.filter(task => task.completed);
-  const pendingTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.status === 'completed');
+  const pendingTasks = tasks.filter(task => task.status !== 'completed');
 
   return (
     <div className="task-list">

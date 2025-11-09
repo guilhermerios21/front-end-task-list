@@ -86,7 +86,8 @@ export const fetchTasks = async (token: string): Promise<Task[]> => {
     method: 'GET',
     headers: getHeaders(token),
   });
-  return handleResponse<Task[]>(response);
+  const data = await handleResponse<{ message?: string; count?: number; tasks: Task[] }>(response);
+  return data.tasks;
 };
 
 export const fetchTaskById = async (taskId: string, token: string): Promise<Task> => {
@@ -94,7 +95,8 @@ export const fetchTaskById = async (taskId: string, token: string): Promise<Task
     method: 'GET',
     headers: getHeaders(token),
   });
-  return handleResponse<Task>(response);
+  const data = await handleResponse<{ message?: string; task: Task }>(response);
+  return data.task;
 };
 
 export const createTask = async (taskData: TaskCreateData, token: string): Promise<Task> => {
@@ -145,7 +147,8 @@ export const fetchTaskStats = async (token: string): Promise<TaskStats> => {
     method: 'GET',
     headers: getHeaders(token),
   });
-  return handleResponse<TaskStats>(response);
+  const data = await handleResponse<{ message?: string; stats: TaskStats }>(response);
+  return data.stats;
 };
 
 // ==================== USERS (opcional, caso precise) ====================

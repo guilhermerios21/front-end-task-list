@@ -66,7 +66,7 @@ const Tasks: React.FC = () => {
       const taskData: TaskCreateData = {
         title: newTaskTitle.trim(),
         description: newTaskDescription.trim() || undefined,
-        completed: false,
+        status: 'pending',
       };
 
       const newTask = await createTask(taskData, token);
@@ -109,13 +109,15 @@ const Tasks: React.FC = () => {
   };
 
   // Toggle status da tarefa (usando PATCH)
-  const handleToggleTask = async (taskId: string, completed: boolean) => {
+  const handleToggleTask = async (taskId: string, currentStatus: string) => {
     if (!token) return;
 
+    const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+
     try {
-      const updatedTask = await patchTask(taskId, { completed }, token);
+      const updatedTask = await patchTask(taskId, { status: newStatus }, token);
       setTasks(tasks.map(task => task._id === taskId ? updatedTask : task));
-      toast.success(completed ? 'Tarefa concluída!' : 'Tarefa reaberta!');
+      toast.success(newStatus === 'completed' ? 'Tarefa concluída!' : 'Tarefa reaberta!');
     } catch (error: any) {
       console.error('Erro ao atualizar status:', error);
       
@@ -153,7 +155,7 @@ const Tasks: React.FC = () => {
   };
 
   // Estatísticas
-  const completedTasks = tasks.filter(task => task.completed).length;
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
   const pendingTasks = tasks.length - completedTasks;
 
   return (

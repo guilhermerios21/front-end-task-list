@@ -4,7 +4,7 @@ import './TaskItem.css';
 
 interface TaskItemProps {
   task: Task;
-  onToggle: (taskId: string, completed: boolean) => Promise<void>;
+  onToggle: (taskId: string, currentStatus: string) => Promise<void>;
   onUpdate: (taskId: string, taskData: TaskUpdateData) => Promise<void>;
   onDelete: (taskId: string) => Promise<void>;
 }
@@ -15,7 +15,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onUpdate, onDelete 
   const [editDescription, setEditDescription] = useState(task.description || '');
 
   const handleToggle = () => {
-    onToggle(task._id, !task.completed);
+    onToggle(task._id, task.status);
   };
 
   const handleSaveEdit = () => {
@@ -26,7 +26,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onUpdate, onDelete 
     onUpdate(task._id, {
       title: editTitle.trim(),
       description: editDescription.trim() || undefined,
-      completed: task.completed,
+      status: task.status,
     });
     setIsEditing(false);
   };
@@ -72,11 +72,11 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggle, onUpdate, onDelete 
   }
 
   return (
-    <div className={`task-item ${task.completed ? 'completed' : ''}`}>
+    <div className={`task-item ${task.status === 'completed' ? 'completed' : ''}`}>
       <div className="task-content">
         <input
           type="checkbox"
-          checked={task.completed}
+          checked={task.status === 'completed'}
           onChange={handleToggle}
           className="task-checkbox"
         />
