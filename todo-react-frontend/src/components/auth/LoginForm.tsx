@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../services/api';
+import { loginUser } from '../../services/api';
 import { setToken } from '../../utils/storage';
 
 const LoginForm: React.FC = () => {
@@ -14,7 +14,7 @@ const LoginForm: React.FC = () => {
         setError('');
 
         try {
-            const response = await login({ email, password });
+            const response = await loginUser({ email, password });
             setToken(response.token);
             navigate('/tasks');
         } catch (err) {

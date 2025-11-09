@@ -7,6 +7,13 @@ export default defineConfig({
     host: true,
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'https://backend-express.conference-ticket-guilhermerios.tech',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
