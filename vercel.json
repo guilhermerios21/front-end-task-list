@@ -9,7 +9,7 @@
     },
     {
       "source": "/api-pg/(.*)",
-      "destination": "https://SEU-BACKEND-POSTGRES.vercel.app/api/$1"
+      "destination": "https://atv2-postgre.conference-ticket-guilhermerios.tech/api/$1"
     },
     {
       "source": "/api/(.*)",
