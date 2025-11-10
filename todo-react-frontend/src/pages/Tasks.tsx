@@ -71,7 +71,8 @@ const Tasks: React.FC = () => {
       };
 
       const newTask = await createTask(taskData, token);
-      setTasks([...tasks, newTask]);
+    console.log('Tarefa criada:', newTask);
+    setTasks(prevTasks => [...prevTasks, newTask]);
       setNewTaskTitle('');
       setNewTaskDescription('');
       toast.success('Tarefa criada com sucesso!');

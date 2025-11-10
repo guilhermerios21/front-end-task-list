@@ -140,7 +140,9 @@ export const createTask = async (taskData: TaskCreateData, token: string): Promi
     headers: getHeaders(token),
     body: JSON.stringify(taskData),
   });
-  const task = await handleResponse<Task>(response);
+  const data = await handleResponse<any>(response);
+  // Backend pode retornar { task: {...} } ou diretamente a task
+  const task = data.task || data;
   return normalizeTask(task);
 };
 
