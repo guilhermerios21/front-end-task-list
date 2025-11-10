@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { getToken, setToken, clearAuth, getUser, setUser as saveUser } from '../utils/storage';
 import { decodeToken, isTokenValid, getTokenTimeRemaining } from '../utils/jwt';
 import type { User } from '../types';
+import { toast } from 'react-toastify';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -20,6 +21,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setTokenState] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const logoutTimerRef = useRef<number | null>(null);
+  const warnTimerRef = useRef<number | null>(null);
+
+  const clearTimers = () => {
+    if (logoutTimerRef.current) {
+      window.clearTimeout(logoutTimerRef.current);
+      logoutTimerRef.current = null;
+    }
+    if (warnTimerRef.current) {
+      window.clearTimeout(warnTimerRef.current);
+      warnTimerRef.current = null;
+    }
+  };
+
+  // Agenda logout automático e aviso próximo da expiração
+  const scheduleExpirationHandlers = useCallback((jwt: string) => {
+    clearTimers();
+    try {
+      const decoded = decodeToken(jwt);
+      if (!decoded || !decoded.exp) return;
+
+      const expiresAt = decoded.exp * 1000; // ms
+      const now = Date.now();
+      const msUntilExpire = Math.max(0, expiresAt - now);
+
+      // Aviso 60s antes de expirar (se houver tempo suficiente)
+      const msUntilWarn = msUntilExpire - 60_000;
+      if (msUntilWarn > 0) {
+        warnTimerRef.current = window.setTimeout(() => {
+          toast.warning('Sua sessão vai expirar em 1 minuto. Salve seu trabalho.');
+        }, msUntilWarn);
+      }
+
+      // Logout exatamente na expiração
+      logoutTimerRef.current = window.setTimeout(() => {
+        toast.error('Sessão expirada. Faça login novamente.');
+        logout();
+      }, msUntilExpire + 250); // pequeno buffer para garantir expiração
+    } catch {
+      // silencioso
+    }
+  }, []);
 
   // Verifica autenticação
   const checkAuth = useCallback((): boolean => {
@@ -43,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (storedToken && isTokenValid(storedToken)) {
       setTokenState(storedToken);
+      scheduleExpirationHandlers(storedToken);
       
       if (storedUser) {
         setUserState(storedUser);
@@ -68,28 +112,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  // Monitora expiração do token
+  // Monitora expiração do token periodicamente (fallback) e em eventos de foco/visibilidade
   useEffect(() => {
     if (!token) return;
 
-    const checkInterval = setInterval(() => {
+    const check = () => {
+      if (!token) return;
       if (!isTokenValid(token)) {
-        console.log('Token expirado, fazendo logout...');
+        toast.error('Sessão expirada. Faça login novamente.');
         logout();
-      } else {
-        const timeRemaining = getTokenTimeRemaining(token);
-        if (timeRemaining < 60) { // Menos de 1 minuto
-          console.warn(`Token expira em ${Math.floor(timeRemaining)} segundos`);
-        }
       }
-    }, 10000); // Verifica a cada 10 segundos
+    };
 
-    return () => clearInterval(checkInterval);
-  }, [token]);
+    // schedule precise timers
+    scheduleExpirationHandlers(token);
+
+    const interval = window.setInterval(() => {
+      const remaining = getTokenTimeRemaining(token);
+      if (remaining <= 0) {
+        check();
+      }
+    }, 10_000);
+
+    // Revalida quando volta ao app
+    const onFocus = () => check();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') check();
+    };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+      clearTimers();
+    };
+  // 'logout' é definido abaixo, então removemos da lista até mover logout para cima
+  }, [token, scheduleExpirationHandlers]);
 
   const login = useCallback((newToken: string) => {
     setToken(newToken);
     setTokenState(newToken);
+    scheduleExpirationHandlers(newToken);
 
     // Extrai informações do usuário do token
     const decoded = decodeToken(newToken);
@@ -111,6 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTokenState(null);
     setUserState(null);
     setIsAuthenticated(false);
+    clearTimers();
   }, []);
 
   const value: AuthContextType = {
